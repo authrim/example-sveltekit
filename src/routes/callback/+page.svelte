@@ -11,6 +11,9 @@
 
 	onMount(async () => {
 		try {
+			// Note: Smart Handoff SSO is handled automatically by createHandoffHandler()
+			// in hooks.server.ts. This page only handles regular social login callbacks.
+
 			if (auth.social.hasCallbackParams()) {
 				const result = await auth.social.handleCallback();
 				if (result.error) {

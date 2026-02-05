@@ -1,4 +1,5 @@
-import { createAuthHandle } from '@authrim/sveltekit/server';
+import { sequence } from '@sveltejs/kit/hooks';
+import { createAuthHandle, createHandoffHandler } from '@authrim/sveltekit/server';
 import { env } from '$env/dynamic/public';
 
 const issuer = env.PUBLIC_AUTHRIM_ISSUER;
@@ -10,8 +11,15 @@ if (!issuer || !clientId) {
 	);
 }
 
-export const handle = createAuthHandle({
-	issuer: issuer || '',
-	clientId: clientId || '',
-	callbackPaths: ['/callback']
-});
+export const handle = sequence(
+	createAuthHandle({
+		issuer: issuer || '',
+		clientId: clientId || '',
+		callbackPaths: ['/callback']
+	}),
+	createHandoffHandler({
+		issuer: issuer || '',
+		clientId: clientId || '',
+		errorRedirect: '/login?error=handoff_failed'
+	})
+);
