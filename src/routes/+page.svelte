@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { getAuthContext } from '@authrim/sveltekit';
 	import { Card, Button, Spinner } from '@authrim/sveltekit/ui';
 
@@ -7,18 +8,56 @@
 	const { session, user, isAuthenticated, loadingState } = auth.stores;
 
 	let signingOut = $state(false);
+	let ssoLoading = $state(false);
 
 	// Session is automatically checked via:
 	// 1. Server-side: hooks.server.ts loads session into locals
 	// 2. Client-side: AuthProvider syncs session from SSR and revalidates
 
+	// Try automatic silent SSO on first visit
+	onMount(() => {
+		if (!$isAuthenticated && auth.oauth) {
+			const ssoAttempted = sessionStorage.getItem('sso_attempted');
+			if (!ssoAttempted) {
+				sessionStorage.setItem('sso_attempted', 'true');
+				// Try silent SSO (will redirect if successful or if login_required)
+				auth.oauth.trySilentLogin({
+					onLoginRequired: 'return',
+					returnTo: window.location.href,
+				}).catch((err) => {
+					console.error('SSO error:', err);
+				});
+			}
+		}
+	});
+
 	async function handleSignOut() {
 		signingOut = true;
 		try {
 			await auth.signOut();
+			// Clear SSO flag to allow retry on next visit
+			sessionStorage.removeItem('sso_attempted');
 			goto('/');
 		} finally {
 			signingOut = false;
+		}
+	}
+
+	async function handleSSOLogin() {
+		if (!auth.oauth) {
+			console.error('OAuth is not enabled');
+			return;
+		}
+
+		ssoLoading = true;
+		try {
+			await auth.oauth.trySilentLogin({
+				onLoginRequired: 'login',
+				returnTo: window.location.href,
+			});
+		} catch (err) {
+			console.error('SSO login error:', err);
+			ssoLoading = false;
 		}
 	}
 </script>
@@ -81,6 +120,11 @@
 					<Button href="/login" size="lg" fullWidth>
 						Sign In
 					</Button>
+					{#if auth.oauth}
+						<Button variant="secondary" size="lg" fullWidth loading={ssoLoading} on:click={handleSSOLogin}>
+							SSO Login
+						</Button>
+					{/if}
 					<Button href="/signup" variant="outline" size="lg" fullWidth>
 						Create Account
 					</Button>
@@ -94,6 +138,8 @@
 				<li>Passkey Authentication (WebAuthn)</li>
 				<li>Email Code Authentication (Passwordless)</li>
 				<li>Social Login (Google, GitHub, Apple)</li>
+				<li>OAuth 2.0 / OpenID Connect SSO</li>
+				<li>Silent Authentication (prompt=none)</li>
 				<li>Session Management</li>
 				<li>Passkey Management</li>
 				<li>Server-side Session Validation</li>

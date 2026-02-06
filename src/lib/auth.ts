@@ -11,7 +11,8 @@ export async function getAuth(): Promise<AuthrimClient> {
 	const config = getAuthConfig();
 	authClient = await createAuthrim({
 		issuer: config.issuer,
-		clientId: config.clientId
+		clientId: config.clientId,
+		enableOAuth: true
 	});
 
 	return authClient;

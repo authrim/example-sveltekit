@@ -12,8 +12,20 @@
 	onMount(async () => {
 		try {
 			// Note: Smart Handoff SSO is handled automatically by createHandoffHandler()
-			// in hooks.server.ts. This page only handles regular social login callbacks.
+			// in hooks.server.ts. This page handles both social login and OAuth callbacks.
 
+			// Check if this is a silent login callback
+			if (auth.oauth) {
+				const silentResult = await auth.oauth.handleSilentCallback();
+
+				if (silentResult.status !== 'error' || silentResult.error !== 'not_silent_login') {
+					// This was a silent login callback (successful or failed)
+					// The callback handler already redirected, so we're done
+					return;
+				}
+			}
+
+			// Not a silent login callback - handle social login
 			if (auth.social.hasCallbackParams()) {
 				const result = await auth.social.handleCallback();
 				if (result.error) {
