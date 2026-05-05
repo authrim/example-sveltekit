@@ -10,6 +10,7 @@ A complete authentication demo using `@authrim/sveltekit`. Deploy to Cloudflare 
 - **Session Management** - View and revoke active sessions
 - **Passkey Management** - Add and remove passkeys
 - **Server-side Validation** - Protected routes with SSR
+- **Server-mediated Auth** - Direct Auth artifacts are redeemed by SvelteKit endpoints and stored as HttpOnly cookie sessions
 
 ## Quick Start
 
@@ -34,6 +35,7 @@ Edit `.env` with your Authrim credentials:
 ```env
 PUBLIC_AUTHRIM_ISSUER=https://your-tenant.authrim.com
 PUBLIC_AUTHRIM_CLIENT_ID=your-client-id
+AUTHRIM_SESSION_SECRET=replace-with-at-least-32-random-bytes
 ```
 
 ### 3. Configure Authrim Admin
@@ -65,6 +67,7 @@ Open [http://localhost:5173](http://localhost:5173)
 5. Add environment variables:
    - `PUBLIC_AUTHRIM_ISSUER`
    - `PUBLIC_AUTHRIM_CLIENT_ID`
+   - `AUTHRIM_SESSION_SECRET`
 
 ### Option 2: Direct Upload
 
@@ -89,7 +92,8 @@ src/
 ├── hooks.server.ts       # Server hooks (auth middleware)
 ├── lib/
 │   ├── auth.ts           # Authrim client initialization
-│   └── config.ts         # Configuration helpers
+│   ├── config.ts         # Configuration helpers
+│   └── server-auth.ts    # Server-mediated Direct Auth handlers
 └── routes/
     ├── +layout.svelte    # Root layout with AuthProvider
     ├── +layout.server.ts # Server-side session loading
@@ -100,6 +104,8 @@ src/
     │   └── +page.svelte  # Sign up page
     ├── callback/
     │   └── +page.svelte  # OAuth callback handler
+    ├── authrim/
+    │   └── session/      # Server-mediated session endpoints
     └── account/
         ├── +page.svelte      # Account settings (protected)
         └── +page.server.ts   # Auth guard

@@ -13,6 +13,7 @@ declare global {
 			env?: {
 				PUBLIC_AUTHRIM_ISSUER?: string;
 				PUBLIC_AUTHRIM_CLIENT_ID?: string;
+				AUTHRIM_SESSION_SECRET?: string;
 			};
 		}
 	}
