@@ -10,7 +10,7 @@ A complete authentication demo using `@authrim/sveltekit`. Deploy to Cloudflare 
 - **Session Management** - View and revoke active sessions
 - **Passkey Management** - Add and remove passkeys
 - **Server-side Validation** - Protected routes with SSR
-- **Server-mediated Auth** - Direct Auth artifacts are redeemed by SvelteKit endpoints and stored as HttpOnly cookie sessions
+- **Server-mediated Auth** - Direct Auth artifacts are redeemed by SvelteKit endpoints and stored as encrypted HttpOnly cookie sessions
 
 ## Quick Start
 
