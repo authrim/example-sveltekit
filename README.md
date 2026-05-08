@@ -1,6 +1,6 @@
 # Authrim SvelteKit Example
 
-A complete authentication demo using `@authrim/sveltekit`. Deploy to Cloudflare Pages or run locally.
+A complete authentication demo using `@authrim/sveltekit`. Deploy to Cloudflare Workers or run locally.
 
 ## Features
 
@@ -53,12 +53,12 @@ pnpm dev
 
 Open [http://localhost:5173](http://localhost:5173)
 
-## Deploy to Cloudflare Pages
+## Deploy to Cloudflare Workers
 
 ### Option 1: Git Integration
 
 1. Push your code to GitHub
-2. Go to Cloudflare Dashboard → Pages → Create a project
+2. Go to Cloudflare Dashboard → Workers & Pages → Create application
 3. Connect your GitHub repository
 4. Configure build settings:
    - **Framework preset**: SvelteKit
@@ -73,15 +73,15 @@ Open [http://localhost:5173](http://localhost:5173)
 
 ```bash
 pnpm build
-npx wrangler pages deploy .svelte-kit/cloudflare
+npx wrangler deploy
 ```
 
 ### Post-Deploy Configuration
 
 Update your Authrim Admin settings:
 
-- **Redirect URI**: `https://your-app.pages.dev/callback`
-- **Allowed Origins**: `https://your-app.pages.dev`
+- **Redirect URI**: `https://your-app.example.workers.dev/callback`
+- **Allowed Origins**: `https://your-app.example.workers.dev`
 
 ## Project Structure
 
