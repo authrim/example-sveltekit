@@ -12,6 +12,7 @@ export async function getAuth(): Promise<AuthrimClient> {
 	authClient = await createAuthrim({
 		issuer: config.issuer,
 		clientId: config.clientId,
+		profile: 'auto',
 		enableOAuth: true
 	});
 
